@@ -7,8 +7,8 @@ namespace NoSpaceBeginEndRule
 {
     public class NoSpaceBeginEndRule : IRule
     {
-        public string Name => "RemoveSpacesBeginEnd";
-
+        public string Name => "RemoveSpacesOfBeginEnd";
+        public string DisplayName => "Remove Spaces Of Begin & End";
         public bool IsCheck { get; set; }
 
         public string ToolTip => "Remove all space from the beginning and the ending of the filename";

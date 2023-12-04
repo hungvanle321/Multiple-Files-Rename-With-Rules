@@ -10,6 +10,7 @@ namespace ChangeExtensionRule
         public string NewExtension { get; set; }
 
         public string Name => "ChangeExtension";
+        public string DisplayName => "Change Extension";
 
         public bool IsCheck { get; set; }
 

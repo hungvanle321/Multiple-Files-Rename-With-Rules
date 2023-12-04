@@ -5,151 +5,166 @@
         xmlns:dd="urn:gong-wpf-dragdrop"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa="clr-namespace:FontAwesome.WPF;assembly=FontAwesome.WPF"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="Multiple Files Rename" Height="450" Width="1150" MinHeight="450"
         Loaded="Window_Loaded"
         SizeChanged="Window_SizeChanged"
+        Style="{StaticResource CustomFont}"
         >
+    <Window.Resources>
+        <Style x:Key="HoverImageAwesomeStyle" TargetType="fa:ImageAwesome">
+            <Setter Property="Height" Value="16"/>
+            <Setter Property="Width" Value="16"/>
+            <Setter Property="Margin" Value="0,0,5,0"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="Orange"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Grid>
         <DockPanel LastChildFill="True">
-            <Grid DockPanel.Dock="Top">
-                
-            </Grid>
             <DockPanel DockPanel.Dock="Left">
                 <StackPanel  DockPanel.Dock="Top">
                     <StackPanel Height="35" Orientation="Horizontal">
-                        <TextBlock Text="Presets: " Margin="5,0,5,0" VerticalAlignment="Center"></TextBlock>
-                        <Border BorderBrush="Aqua" BorderThickness="2" Height="30" Width="110" CornerRadius="5">
-                            <ComboBox Background="Transparent" BorderThickness="0" x:Name="presetComboBox" VerticalContentAlignment="Center"
-                                      DisplayMemberPath="Name" SelectedIndex="-1"
-                                      SelectedValue="{Binding Path=Name}"
-                                      DropDownClosed="PresetComboBox_DropDownClosed"></ComboBox>
-                        </Border>
-                        <Border CornerRadius="5" BorderThickness="2" BorderBrush="Black" Width="60" Margin="40,0,0,0" Height="25">
-                            <Border.Background>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                    <GradientStop Color="#ffcf37" Offset="0.4"/>
-                                    <GradientStop Color="LightCoral" />
-                                </LinearGradientBrush>
-                            </Border.Background>
+                        <TextBlock Text="Presets " Margin="5,0,5,0" VerticalAlignment="Center"></TextBlock>
 
-                            <Button Background="Transparent" Click="ClearPresetButton_Click" x:Name="ClearPresetButton" Template="{StaticResource NoMouseOverButtonTemplate}">
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <fa:ImageAwesome Icon="TrashOutline" Height="16" Margin="2,0,2,0" Foreground="Red"></fa:ImageAwesome>
-                                    <TextBlock FontWeight="Bold" Foreground="Red">Clear</TextBlock>
-                                </StackPanel>
-                            </Button>
+                        <ComboBox Background="Transparent" BorderThickness="0" x:Name="presetComboBox" VerticalContentAlignment="Center"
+                                    DisplayMemberPath="Name" SelectedIndex="-1" Height="30" Width="110"
+                                    SelectedValue="{Binding Path=Name}"
+                                    DropDownClosed="PresetComboBox_DropDownClosed"
+                                    Style="{DynamicResource theComboBox}"
+                                    ItemContainerStyle="{DynamicResource theComboBoxItem}"
+                                  HorizontalContentAlignment="Left"></ComboBox>
 
-                        </Border>
+                        <StackPanel Orientation="Horizontal">
+                            <Border CornerRadius="5" BorderThickness="2" BorderBrush="Black" Width="30" Height="25" Margin="7,0,5,0" ToolTip="Load preset">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#ffcf37" Offset="0.4"/>
+                                        <GradientStop Color="LightCoral" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+
+                                <Button Background="Transparent" Click="LoadPresetButton_Click" BorderThickness="0" x:Name="LoadPresetButton" Template="{StaticResource NoMouseOverButtonTemplate}">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <fa:ImageAwesome Icon="Upload" Height="16" Margin="5,0,5,0" Foreground="Red"></fa:ImageAwesome>
+                                    </StackPanel>
+                                </Button>
+                            </Border>
+                            <Border CornerRadius="5" BorderThickness="2" BorderBrush="Black" Width="30" Height="25" Margin="0,0,5,0" ToolTip="Save preset">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#ffcf37" Offset="0.4"/>
+                                        <GradientStop Color="LightCoral" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+
+                                <Button Background="Transparent" Click="SavePresetButton_Click" BorderThickness="0" x:Name="SavePresetButton" Template="{StaticResource NoMouseOverButtonTemplate}">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <fa:ImageAwesome Icon="Save" Height="16" Margin="5,0,5,0" Foreground="Red"></fa:ImageAwesome>
+                                    </StackPanel>
+                                </Button>
+                            </Border>
+                            <Border CornerRadius="5" BorderThickness="2" BorderBrush="Black" Width="30" Height="25"  ToolTip="Remove all presets">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#ffcf37" Offset="0.4"/>
+                                        <GradientStop Color="LightCoral" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+
+                                <Button Background="Transparent" Click="ClearPresetButton_Click" BorderThickness="0" x:Name="ClearPresetButton" Template="{StaticResource NoMouseOverButtonTemplate}">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <fa:ImageAwesome Icon="TrashOutline" Height="16" Margin="5,0,5,0" Foreground="Red"></fa:ImageAwesome>
+                                    </StackPanel>
+                                </Button>
+                            </Border>
+                        </StackPanel>
+
                     </StackPanel>
                     <DockPanel>
                         <Grid>
-                            <ComboBox x:Name="RulesComboBox" SelectedIndex="-1" Foreground="Transparent"
-                                  DisplayMemberPath="Name"
+                            <ComboBox x:Name="RulesComboBox" SelectedIndex="-1" Foreground="Black"
+                                  DisplayMemberPath="DisplayName" Margin="5,0,0,0"
                                   SelectedValue="{Binding Path=Name}"
-                                  DropDownClosed="RulesComboBox_DropDownClosed"
-                                  Width="110">
-                                <ComboBox.Resources>
+                                  Width="221"
+                                  Style="{DynamicResource theComboBox_NoPlaceholder}">
+                                <ComboBox.ItemContainerStyle>
                                     <Style TargetType="{x:Type ComboBoxItem}">
-                                        <Setter Property="Foreground" Value="{StaticResource {x:Static SystemColors.ControlTextBrushKey}}" />
-
+                                        <EventSetter Event="PreviewMouseUp" Handler="RulesComboBox_PreviewMouseUp"/>
+                                        <Setter Property="ToolTip" Value="{Binding ToolTip}"/>
+                                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                        <Setter Property="SnapsToDevicePixels" Value="true" />
+                                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                        <Setter Property="VerticalAlignment" Value="Stretch" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="OverridesDefaultStyle" Value="true"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ComboBoxItem">
+                                                    <Border
+                                                        Name="Border"
+                                                        BorderThickness="2,0,0,0"
+                                                        CornerRadius="0"
+                                                        Background="Transparent"
+                                                        BorderBrush="Transparent">
+                                                        <TextBlock TextAlignment="Left">
+                                                            <ContentPresenter />
+                                                        </TextBlock>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsHighlighted" Value="true">
+                                                            <Setter TargetName="Border" Property="BorderBrush" Value="#fc7c57"/>
+                                                            <Setter TargetName="Border" Property="Background" Value="#feece7"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
                                     </Style>
-                                </ComboBox.Resources>
+                                </ComboBox.ItemContainerStyle>
                             </ComboBox>
                             <StackPanel Orientation="Horizontal" IsHitTestVisible="False">
-                                <fa:ImageAwesome Icon="PlusCircle" Height="16" Margin="5,0,5,0"></fa:ImageAwesome>
-                                <TextBlock VerticalAlignment="Center">Add Method</TextBlock>
+                                <fa:ImageAwesome Icon="PlusCircle" Height="16" Margin="10,0,5,0"></fa:ImageAwesome>
+                                <TextBlock VerticalAlignment="Center">Add Rename Styles</TextBlock>
                             </StackPanel>
                         </Grid>
-                        <Button Width="55" Click="RemoveAllRules_Click">
-                            <StackPanel Orientation="Horizontal">
-                                <fa:ImageAwesome Icon="Trash" Height="16" Margin="2,0,2,0"></fa:ImageAwesome>
-                                <TextBlock>Clear</TextBlock>
-                            </StackPanel>
-                        </Button>
-                        <Button Width="26" Click="ScrollTop">
-                            <fa:ImageAwesome Icon="AngleDoubleUp" Height="18"></fa:ImageAwesome>
-                        </Button>
-                        <Button Width="26" Click="ScrollToTop">
-                            <fa:ImageAwesome Icon="AngleUp" Height="10"></fa:ImageAwesome>
-                        </Button>
-                        <Button Width="26" Click="ScrollToBottom_Click">
-                            <fa:ImageAwesome Icon="AngleDown" Height="10"></fa:ImageAwesome>
-                        </Button>
-                        <Button Width="26" Click="ScrollBottom">
-                            <fa:ImageAwesome Icon="AngleDoubleDown" Height="18"></fa:ImageAwesome>
-                        </Button>
+
+                        <ComboBox x:Name="checkAllComboBox" Width="55" Height="30" SelectedIndex="0" HorizontalAlignment="Right" ToolTip="Check/uncheck all rules"
+                                  Style="{DynamicResource theComboBox}"
+                                  ItemContainerStyle="{DynamicResource theComboBoxItem}">
+                            <ComboBoxItem>
+                                <Grid Width="30" Background="Transparent" MouseUp="SelectAllButton_Click" ToolTip="Check all rules">
+                                    <BulletDecorator Background="Transparent" HorizontalAlignment="Center">
+                                        <BulletDecorator.Bullet>
+                                            <Grid>
+                                                <Border x:Name="Border" Width="13" Height="13" CornerRadius="2" Background="#ffffff" BorderBrush="#999999" BorderThickness="1"/>
+                                                <Image x:Name="CheckMark" Width="25" Height="25" Source="/Images/CheckMark.png" RenderOptions.BitmapScalingMode="HighQuality"  VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                            </Grid>
+                                        </BulletDecorator.Bullet>
+                                        <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Right" RecognizesAccessKey="True"/>
+                                    </BulletDecorator>
+                                </Grid>
+                            </ComboBoxItem>
+                            <ComboBoxItem>
+                                <Grid Width="30" Background="Transparent" MouseUp="DeselectAllButton_Click" ToolTip="Uncheck all rules">
+                                    <BulletDecorator Background="Transparent" HorizontalAlignment="Center">
+                                        <BulletDecorator.Bullet>
+                                            <Grid>
+                                                <Border Width="13" Height="13" CornerRadius="2" Background="#ffffff" BorderBrush="#999999" BorderThickness="1"/>
+                                                <Image Width="25" Height="25" RenderOptions.BitmapScalingMode="HighQuality"  VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                            </Grid>
+                                        </BulletDecorator.Bullet>
+                                        <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Right" RecognizesAccessKey="True"/>
+                                    </BulletDecorator>
+                                </Grid>
+                            </ComboBoxItem>
+                        </ComboBox>
                     </DockPanel>
                 </StackPanel>
-                <DockPanel DockPanel.Dock="Bottom">
-                    <StackPanel Orientation="Vertical" Width="260" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,0,5">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <Border CornerRadius="5" BorderThickness="2" BorderBrush="Black" Width="70">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Color="#BFE47A" Offset="0.3"/>
-                                        <GradientStop Color="#FFE47A" Offset="0.61"/>
-                                        <GradientStop Color="#FFE6CF" />
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                                <Button Content="Select all" Template="{StaticResource NoMouseOverButtonTemplate}"
-                                        x:Name="SelectAllButton"
-                                        Click="SelectAllButton_Click"
-                                        BorderThickness="0" 
-                                        Background="Transparent" FontWeight="Bold" Foreground="DarkGreen"></Button>
-                            </Border>
-
-                            <Border CornerRadius="5" BorderThickness="2" BorderBrush="Black"  Width="80" Margin="50,0,0,0">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Color="#E63245" Offset="0.3"/>
-                                        <GradientStop Color="#e17a15" Offset="0.4"/>
-                                        <GradientStop Color="#e65245"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                                <Button Content="Deselect all" Click="DeselectAllButton_Click"
-                                        Template="{StaticResource NoMouseOverButtonTemplate}" x:Name="DeselectAllButton"
-                                        BorderThickness="0" Background="Transparent" FontWeight="Bold" Foreground="White"></Button>
-                            </Border>
-                        </StackPanel>
-
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10,0,0">
-                            <Border CornerRadius="5" BorderThickness="2" BorderBrush="Black" Width="100">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Color="#EBC0E4" Offset="0.4"/>
-                                        <GradientStop Color="#EAECC6" Offset="0.31"/>
-                                        <GradientStop Color="#FF55CF" />
-                                    </LinearGradientBrush>
-                                </Border.Background>
-
-                                <Button Background="Transparent" Click="LoadPresetButton_Click" x:Name="LoadPresetButton"  BorderThickness="0" Template="{StaticResource NoMouseOverButtonTemplate}">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <fa:ImageAwesome Icon="Upload" Height="16" Margin="2,0,2,0" Foreground="DarkMagenta"></fa:ImageAwesome>
-                                        <TextBlock FontWeight="Bold" Foreground="DarkMagenta">Load preset</TextBlock>
-                                    </StackPanel>
-                                </Button>
-
-                            </Border>
-                            <Border CornerRadius="5" BorderThickness="2" BorderBrush="Black" Margin="40,0,0,0" Width="100">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Color="#EBC0E4" Offset="0.4"/>
-                                        <GradientStop Color="#EAECC6" Offset="0.31"/>
-                                        <GradientStop Color="#FF55CF" />
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                                <Button Background="Transparent" Click="SavePresetButton_Click" x:Name="SavePresetButton"  BorderThickness="0" Template="{StaticResource NoMouseOverButtonTemplate}">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <fa:ImageAwesome Icon="Save" Height="16" Margin="2,0,2,0" Foreground="DarkMagenta"></fa:ImageAwesome>
-                                        <TextBlock FontWeight="Bold" Foreground="DarkMagenta">Save preset</TextBlock>
-                                    </StackPanel>
-                                </Button>
-                            </Border>
-                        </StackPanel>
-
-                    </StackPanel>
-                </DockPanel>
                 <ScrollViewer x:Name="scrollViewer" VerticalScrollBarVisibility="Auto" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
                     <Grid VerticalAlignment="Top" HorizontalAlignment="Center" d:Background="Brown" 
                           ScrollViewer.CanContentScroll="True">
@@ -240,7 +255,7 @@
             </DockPanel>
             <Grid>
                 <Border Panel.ZIndex="2" CornerRadius="5" BorderBrush="Black" BorderThickness="2" Width="138" Height="25" Style="{StaticResource Batchable}"
-                        HorizontalAlignment="Right" VerticalAlignment="Top">
+                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,5,0">
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                             <GradientStop Color="#FF512F" Offset="0.2"/>
@@ -284,50 +299,69 @@
 
                     <TabItem Header="Rename Files">
                         <DockPanel LastChildFill="True">
-                            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Left">
-                                <ComboBox x:Name="fileComboBox" Width="120" Height="28" SelectedIndex="0" DropDownClosed="fileComboBox_DropDownClosed" VerticalContentAlignment="Center">
-                                    <ComboBoxItem>
-                                        <WrapPanel Orientation="Horizontal">
-                                            <fa:ImageAwesome Icon="File" Height="16" Width="16" Margin="0,0,5,0"></fa:ImageAwesome>
-                                            <TextBlock>Add Files</TextBlock>
-                                        </WrapPanel>
-                                    </ComboBoxItem>
-                                    <ComboBoxItem>
-                                        <WrapPanel Orientation="Horizontal">
-                                            <fa:ImageAwesome Icon="Folder" Height="16"  Width="16"  Margin="0,0,5,0"></fa:ImageAwesome>
-                                            <TextBlock>Add Folder</TextBlock>
-                                        </WrapPanel>
-                                    </ComboBoxItem>
-                                </ComboBox>
-                                <Button Width="100" Click="ClearAllFiles" >
-                                    <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
-                                        <fa:ImageAwesome Icon="Remove" Height="16"  Width="16" Margin="0,0,5,0"></fa:ImageAwesome>
-                                        <TextBlock>Remove All</TextBlock>
-                                    </StackPanel>
-                                </Button>
-                                <Button Width="180" Click="RemoveAllNonexistFiles" >
-                                    <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
-                                        <fa:ImageAwesome Icon="TrashOutline" Height="16"  Width="16" Margin="0,0,5,0"></fa:ImageAwesome>
-                                        <TextBlock>Remove All Non-exist Files</TextBlock>
-                                    </StackPanel>
-                                </Button>
-                            </StackPanel>
+                            <Grid DockPanel.Dock="Top">
+                                <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,5,0,5">
+                                    <ComboBox x:Name="fileComboBox" Width="132" Height="28" SelectedIndex="0" VerticalContentAlignment="Center" Margin="5,0,5,0"
+                                              Style="{DynamicResource theComboBox}"
+                                              ItemContainerStyle="{DynamicResource theComboBoxItem}">
+                                        <ComboBoxItem>
+                                            <Grid Width="120" Background="Transparent" MouseUp="fileComboBoxItems_AddFiles_MouseUp">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <fa:ImageAwesome Icon="File" Height="16" Width="16" Margin="0,0,5,0"></fa:ImageAwesome>
+                                                    <Label Content="Add Files"></Label>
+                                                </StackPanel>
+                                            </Grid>
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <Grid Width="120" Background="Transparent" MouseUp="fileComboBoxItems_AddFolders_MouseUp">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <fa:ImageAwesome Icon="Folder" Height="16"  Width="16"  Margin="0,0,5,0"></fa:ImageAwesome>
+                                                    <Label Content="Add Folder"></Label>
+                                                </StackPanel>
+                                            </Grid>
+                                        </ComboBoxItem>
+                                    </ComboBox>
+                                    <Border BorderBrush="#b3b3b3" BorderThickness="1" Width="120" CornerRadius="5" Margin="5,0,5,0">
+                                        <Button Click="ClearAllFiles" BorderThickness="0" Background="Transparent" Template="{StaticResource ChangeBackgroundButtonTemplate}">
+                                            <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
+                                                <fa:ImageAwesome Icon="Remove" Height="16"  Width="16" Margin="5,0,10,0"></fa:ImageAwesome>
+                                                <TextBlock>Remove All</TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                    </Border>
+
+                                    <Border BorderBrush="#b3b3b3" BorderThickness="1" Width="205" CornerRadius="5" Margin="5,0,5,0">
+                                        <Button Click="RemoveAllNonexistFiles" BorderThickness="0" Background="Transparent" Template="{StaticResource ChangeBackgroundButtonTemplate}" >
+                                            <StackPanel Orientation="Horizontal">
+                                                <fa:ImageAwesome Icon="TrashOutline" Height="16"  Width="16" Margin="5,0,10,0"></fa:ImageAwesome>
+                                                <TextBlock>Remove Non-exist Files</TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                    </Border>
+                                </StackPanel>
+                                <xctk:CheckComboBox x:Name="checkColumnsComboBox" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                     Width="150" Loaded="checkColumnsComboBox_Loaded" Margin="0,0,5,0"
+                                     ItemSelectionChanged="checkColumnsComboBox_ItemSelectionChanged" 
+                                     SelectedValue="{Binding SelectedValue}"
+                                     SelectedItemsOverride="{Binding SelectedItems}"/>
+                            </Grid>
 
                             <StackPanel x:Name="PageNumberStackPanel" Orientation="Horizontal" HorizontalAlignment="Center" DockPanel.Dock="Bottom" Height="20">
-                                <fa:ImageAwesome Icon="AngleDoubleLeft" Height="16" Width="16"  Margin="0,0,5,0" MouseDown="FirstFilePage_MouseDown" Cursor="Hand"></fa:ImageAwesome>
-                                <fa:ImageAwesome Icon="AngleLeft" Height="16" Width="16"  Margin="0,0,5,0" MouseDown="PrevFilePage_MouseDown" Cursor="Hand"></fa:ImageAwesome>
+                                <fa:ImageAwesome Icon="AngleDoubleLeft" Height="16" Width="16"  Margin="0,0,5,0" MouseDown="FirstFilePage_MouseDown" Style="{StaticResource HoverImageAwesomeStyle}"></fa:ImageAwesome>
+                                <fa:ImageAwesome x:Name="prevImage" Icon="AngleLeft" Height="16" Width="16" Margin="0,0,5,0" MouseDown="PrevFilePage_MouseDown" Style="{StaticResource HoverImageAwesomeStyle}"></fa:ImageAwesome>
                                 <TextBlock VerticalAlignment="Center" FontSize="14" Padding="7,0,7,0" FontWeight="Bold">
                             <Run Text="{Binding CurrentPage}" d:Text="3"/>
                             / 
                             <Run Text="{Binding TotalPages}" d:Text="5"/>
                                 </TextBlock>
-                                <fa:ImageAwesome Icon="AngleRight" Height="16" Width="16"  Margin="0,0,5,0" MouseDown="NextFilePage_MouseDown" Cursor="Hand"></fa:ImageAwesome>
-                                <fa:ImageAwesome Icon="AngleDoubleRight" Height="16" Width="16"  Margin="0,0,5,0" MouseDown="LastFilePage_MouseDown" Cursor="Hand"></fa:ImageAwesome>
+                                <fa:ImageAwesome Icon="AngleRight" Height="16" Width="16"  Margin="0,0,5,0" MouseDown="NextFilePage_MouseDown" Style="{StaticResource HoverImageAwesomeStyle}"></fa:ImageAwesome>
+                                <fa:ImageAwesome Icon="AngleDoubleRight" Height="16" Width="16"  Margin="0,0,5,0" MouseDown="LastFilePage_MouseDown" Style="{StaticResource HoverImageAwesomeStyle}"></fa:ImageAwesome>
                             </StackPanel>
-                            <DataGrid Name="dgFiles" AllowDrop="True" DragDrop.Drop="dgFiles_Drop"
+                            <DataGrid Name="dgFiles" AllowDrop="True" DragDrop.Drop="dgFiles_Drop" Margin="0,0,5,0"
                                   GridLinesVisibility="None"
                                   Background="Transparent"
                                   AutoGenerateColumns="False"
+                                  PreviewKeyDown="dgFiles_PreviewKeyDown"
                                   VerticalScrollBarVisibility="Disabled"
                                   IsReadOnly="True">
                                 <DataGrid.Columns>
@@ -361,12 +395,7 @@
                                 <DataGrid.CellStyle>
                                     <Style TargetType="DataGridCell">
                                         <Setter Property="ContextMenu" Value="{StaticResource DatagridContextMenu}"/>
-
-                                        <Style.Triggers>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter Property="BorderThickness" Value="0"/>
-                                            </Trigger>
-                                        </Style.Triggers>
+                                        <Setter Property="BorderThickness" Value="0"/>
                                     </Style>
                                 </DataGrid.CellStyle>
                             </DataGrid>
@@ -375,49 +404,71 @@
 
                     <TabItem Header="Rename Folders">
                         <DockPanel>
-                            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-                                <Button Width="120" Height="28" Name="AddFolders_FolderTab" Click="AddFolders_FolderTab_Click" HorizontalContentAlignment="Left" >
-                                    <StackPanel Orientation="Horizontal" Margin="5,2,0,2">
-                                        <fa:ImageAwesome Icon="Folder" Height="16" Width="16"  Margin="0,0,5,0"></fa:ImageAwesome>
-                                        <TextBlock>Add Folders</TextBlock>
-                                    </StackPanel>
-                                </Button>
+                            <Grid DockPanel.Dock="Top" Margin="0,5,0,5">
+                                <StackPanel  Orientation="Horizontal" >
+                                    <Border BorderBrush="#b3b3b3" BorderThickness="1" Width="125" Height="28"  CornerRadius="5" Margin="5,0,5,0">
+                                        <Button Name="AddFolders_FolderTab" Template="{StaticResource ChangeBackgroundButtonTemplate}"
+                                       Click="AddFolders_FolderTab_Click" 
+                                       HorizontalContentAlignment="Left"
+                                       Background="Transparent"
+                                       BorderThickness="0">
+                                            <StackPanel Orientation="Horizontal" Margin="5,2,0,2">
+                                                <fa:ImageAwesome Icon="Folder" Height="16" Width="16" Margin="5,0,10,0"></fa:ImageAwesome>
+                                                <TextBlock>Add Folders</TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                    </Border>
 
-                                <Button Width="100" Click="ClearAllFolders" >
-                                    <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
-                                        <fa:ImageAwesome Icon="Remove" Height="16"  Width="16" Margin="0,0,5,0"></fa:ImageAwesome>
-                                        <TextBlock>Remove All</TextBlock>
-                                    </StackPanel>
-                                </Button>
-                                <Button Width="190" Click="RemoveAllNonexistFolders" >
-                                    <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
-                                        <fa:ImageAwesome Icon="TrashOutline" Height="16"  Width="16" Margin="0,0,5,0"></fa:ImageAwesome>
-                                        <TextBlock>Remove All Non-exist Folders</TextBlock>
-                                    </StackPanel>
-                                </Button>
-                            </StackPanel>
+                                    <Border BorderBrush="#b3b3b3" BorderThickness="1" Width="120" CornerRadius="5" Margin="5,0,5,0">
+                                        <Button Click="ClearAllFolders" Background="Transparent" BorderThickness="0" Template="{StaticResource ChangeBackgroundButtonTemplate}">
+                                            <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
+                                                <fa:ImageAwesome Icon="Remove" Height="16"  Width="16" Margin="5,0,10,0"></fa:ImageAwesome>
+                                                <TextBlock>Remove All</TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                    </Border>
+
+                                    <Border BorderBrush="#b3b3b3" BorderThickness="1" Width="220" CornerRadius="5" Margin="5,0,5,0">
+                                        <Button Click="RemoveAllNonexistFolders" Background="Transparent" BorderThickness="0" Template="{StaticResource ChangeBackgroundButtonTemplate}">
+                                            <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
+                                                <fa:ImageAwesome Icon="TrashOutline" Height="16"  Width="16" Margin="5,0,10,0"></fa:ImageAwesome>
+                                                <TextBlock>Remove Non-exist Folders</TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                    </Border>
+                                </StackPanel>
+
+                                <xctk:CheckComboBox x:Name="checkColumnsComboBoxFolders" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                    Width="150" Loaded="checkColumnsComboBoxFolders_Loaded" Margin="0,0,5,0"
+                                                    ItemSelectionChanged="checkColumnsComboBoxFolders_ItemSelectionChanged" 
+                                                    SelectedValue="{Binding SelectedValue}"
+                                                    SelectedItemsOverride="{Binding SelectedItems}"/>
+                            </Grid>
+      
+
                             <StackPanel x:Name="FolderPageNumberStackPanel" Orientation="Horizontal" HorizontalAlignment="Center" DockPanel.Dock="Bottom" Height="20">
-                                <fa:ImageAwesome Icon="AngleDoubleLeft" Height="16" Width="16"  Margin="0,0,5,0" MouseDown="FirstFolderPage_MouseDown" Cursor="Hand"></fa:ImageAwesome>
-                                <fa:ImageAwesome Icon="AngleLeft" Height="16" Width="16"  Margin="0,0,5,0" MouseDown="PrevFolderPage_MouseDown" Cursor="Hand"></fa:ImageAwesome>
+                                <fa:ImageAwesome Icon="AngleDoubleLeft" Height="16" Width="16"  Margin="0,0,5,0" MouseDown="FirstFolderPage_MouseDown" Style="{StaticResource HoverImageAwesomeStyle}"></fa:ImageAwesome>
+                                <fa:ImageAwesome Icon="AngleLeft" Height="16" Width="16"  Margin="0,0,5,0" MouseDown="PrevFolderPage_MouseDown" Style="{StaticResource HoverImageAwesomeStyle}"></fa:ImageAwesome>
                                 <TextBlock Name="pagingInfo" VerticalAlignment="Center" FontSize="14" Padding="7,0,7,0" FontWeight="Bold">
                             <Run Text="{Binding CurrentFolderPage}" d:Text="3"/>
                             / 
                             <Run Text="{Binding TotalFolderPages}" d:Text="5"/>
                                 </TextBlock>
-                                <fa:ImageAwesome Icon="AngleRight" Height="16" Width="16"  Margin="0,0,5,0" MouseDown="NextFolderPage_MouseDown" Cursor="Hand"></fa:ImageAwesome>
-                                <fa:ImageAwesome Icon="AngleDoubleRight" Height="16" Width="16"  Margin="0,0,5,0" MouseDown="LastFolderPage_MouseDown" Cursor="Hand"></fa:ImageAwesome>
+                                <fa:ImageAwesome Icon="AngleRight" Height="16" Width="16"  Margin="0,0,5,0" MouseDown="NextFolderPage_MouseDown" Style="{StaticResource HoverImageAwesomeStyle}"></fa:ImageAwesome>
+                                <fa:ImageAwesome Icon="AngleDoubleRight" Height="16" Width="16"  Margin="0,0,5,0" MouseDown="LastFolderPage_MouseDown" Style="{StaticResource HoverImageAwesomeStyle}"></fa:ImageAwesome>
                             </StackPanel>
                             <DataGrid Name="dgFolders" AllowDrop="True" DragDrop.Drop="dgFolders_Drop"
+                                  PreviewKeyDown="dgFolders_PreviewKeyDown"
                                   GridLinesVisibility="None"
                                   Background="Transparent"
                                   AutoGenerateColumns="False"
                                   IsReadOnly="True">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Current Name" Binding="{Binding OldName}" Width="180" HeaderStyle="{StaticResource CenterGridHeaderStyle}"/>
-                                    <DataGridTextColumn Header="New Name" Width="180" Binding="{Binding NewName}" HeaderStyle="{StaticResource CenterGridHeaderStyle}"/>
-                                    <DataGridTextColumn Header="Folder Path" Width="*" Binding="{Binding FilePath}" HeaderStyle="{StaticResource CenterGridHeaderStyle}"/>
-                                    <DataGridTextColumn Header="Folder Size" Width="120" Binding="{Binding FileSize}" HeaderStyle="{StaticResource CenterGridHeaderStyle}"/>
-                                    <DataGridTextColumn Header="Date Modified" Width="150" Binding="{Binding DateModified}" HeaderStyle="{StaticResource CenterGridHeaderStyle}"/>
+                                    <DataGridTextColumn Header="Current Name" Binding="{Binding OldName}" Width="1.5*" HeaderStyle="{StaticResource CenterGridHeaderStyle}"/>
+                                    <DataGridTextColumn Header="New Name" Width="1.5*" Binding="{Binding NewName}" HeaderStyle="{StaticResource CenterGridHeaderStyle}"/>
+                                    <DataGridTextColumn Header="Folder Path" Width="3*" Binding="{Binding FilePath}" HeaderStyle="{StaticResource CenterGridHeaderStyle}"/>
+                                    <DataGridTextColumn Header="Folder Size" Width="*" Binding="{Binding FileSize, Converter={StaticResource filesizeconverter}}" HeaderStyle="{StaticResource CenterGridHeaderStyle}"/>
+                                    <DataGridTextColumn Header="Date Modified" Width="1.5*" Binding="{Binding DateModified}" HeaderStyle="{StaticResource CenterGridHeaderStyle}"/>
                                 </DataGrid.Columns>
 
                                 <DataGrid.Resources>
@@ -443,11 +494,7 @@
                                 <DataGrid.CellStyle>
                                     <Style TargetType="DataGridCell">
                                         <Setter Property="ContextMenu" Value="{StaticResource DatagridContextMenu}"/>
-                                        <Style.Triggers>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter Property="BorderThickness" Value="0"/>
-                                            </Trigger>
-                                        </Style.Triggers>
+                                        <Setter Property="BorderThickness" Value="0"/>
                                     </Style>
                                 </DataGrid.CellStyle>
                             </DataGrid>

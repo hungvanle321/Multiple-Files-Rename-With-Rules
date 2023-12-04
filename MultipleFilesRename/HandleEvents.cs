@@ -37,6 +37,9 @@ namespace MultipleFilesRename
                 _rules[sourcePos] = _rules[destPos];
                 _rules[destPos] = temp;
 
+                nameListBox.ItemsSource = null;
+                nameListBox.ItemsSource = _rules;
+
                 UpdateResult();
             }
         }
@@ -44,26 +47,6 @@ namespace MultipleFilesRename
         private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta / 3);
-        }
-
-        private void ScrollToBottom_Click(object sender, RoutedEventArgs e)
-        {
-            scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset + 40);
-        }
-
-        private void ScrollBottom(object sender, RoutedEventArgs e)
-        {
-            scrollViewer.ScrollToBottom();
-        }
-
-        private void ScrollTop(object sender, RoutedEventArgs e)
-        {
-            scrollViewer.ScrollToTop();
-        }
-
-        private void ScrollToTop(object sender, RoutedEventArgs e)
-        {
-            scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - 40);
         }
     }
 }

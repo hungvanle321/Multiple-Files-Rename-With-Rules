@@ -9,6 +9,7 @@
         bool IsUnique { get; }
 
         string Name { get; }
+        string DisplayName { get; }
 
         bool IsCheck { get; set; }
 

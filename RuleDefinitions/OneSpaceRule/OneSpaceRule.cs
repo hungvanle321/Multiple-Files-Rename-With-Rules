@@ -8,7 +8,7 @@ namespace OneSpaceRule
     public class OneSpaceRule : IRule
     {
         public string Name => "OneSpace";
-
+        public string DisplayName => "One Space Only";
         public bool IsCheck { get; set; }
 
         public string ToolTip => "Replace multiple spaces with a single space";

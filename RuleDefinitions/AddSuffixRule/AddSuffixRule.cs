@@ -10,6 +10,7 @@ namespace AddSuffixRule
         public string Suffix { get; set; }
 
         public string Name => "AddSuffix";
+        public string DisplayName => "Add Suffix";
 
         public string ToolTip => "Adding a suffix to all the file names";
 

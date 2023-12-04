@@ -12,7 +12,13 @@ using IDropTarget = GongSolutions.Wpf.DragDrop.IDropTarget;
 using System.Text.RegularExpressions;
 using System.Linq;
 using System.Windows.Media;
-using Microsoft.WindowsAPICodePack.Dialogs;
+using System.Windows.Controls.Primitives;
+using FontAwesome.WPF;
+using System.Windows.Input;
+using System.Diagnostics;
+using Xceed.Wpf.Toolkit.Primitives;
+using Xceed.Wpf.Toolkit;
+using MessageBox = System.Windows.MessageBox;
 #pragma warning disable
 
 namespace MultipleFilesRename
@@ -35,14 +41,24 @@ namespace MultipleFilesRename
             if (element is Button button)
             {
                 button.Cursor = CustomCursor1;
+                button.FocusVisualStyle = null;
+            }
+            else if (element is ToggleButton toggleButton)
+            {
+                toggleButton.Cursor = CustomCursor1; 
+            }
+            else if (element is ImageAwesome imageAwesome)
+            {
+                imageAwesome.Cursor = CustomCursor1; 
             }
             else
             {
-                int childCount = VisualTreeHelper.GetChildrenCount(element);
-                for (int i = 0; i < childCount; i++)
+                foreach (object logicalChild in LogicalTreeHelper.GetChildren(element))
                 {
-                    DependencyObject child = VisualTreeHelper.GetChild(element, i);
-                    SetButtonCursors(child);
+                    if (logicalChild is DependencyObject logicalElement)
+                    {
+                        SetButtonCursors(logicalElement);
+                    }
                 }
             }
         }
@@ -61,12 +77,10 @@ namespace MultipleFilesRename
             RulesComboBox.ItemsSource = _activeRules;
             nameListBox.ItemsSource = _rules;
 
-            CurrentPage = 1;
             PageNumberStackPanel.Visibility = Visibility.Collapsed;
-
-            CurrentFolderPage = 1;
             FolderPageNumberStackPanel.Visibility = Visibility.Collapsed;
             IsBatchable = false;
+            
         }
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -92,7 +106,7 @@ namespace MultipleFilesRename
         void UpdateTabControl(ObservableCollection<FileInfor> fileInfors, bool fileType)
         {
             List<RuleView> AddCounter_RulePos = new List<RuleView>();
-            if (fileInfors.Count == 0) return;
+            if (fileInfors.Count == 0 || _rules.Count == 0) return;
             foreach (var i in fileInfors)
             {
                 string newName;
@@ -138,16 +152,37 @@ namespace MultipleFilesRename
             UpdateResult();
         }
 
-        private void RulesComboBox_DropDownClosed(object sender, EventArgs e)
+        private static T FindAncestor<T>(DependencyObject current)
+    where T : DependencyObject
         {
-            if (RulesComboBox.SelectedIndex == -1) return;
-            var i = (RulesComboBox.SelectedItem as IRule).Clone() as IRule;
-            if (i.IsUnique && _rules.Any(rule => rule.RuleName == i.Name))
+            do
+            {
+                if (current is T ancestor)
+                {
+                    return ancestor;
+                }
+
+                current = VisualTreeHelper.GetParent(current);
+            }
+            while (current != null);
+
+            return null;
+        }
+
+        private void RulesComboBox_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            var originalSource = e.OriginalSource as FrameworkElement;
+
+            // Find the ComboBoxItem from the visual tree
+            ComboBoxItem comboBoxItem = FindAncestor<ComboBoxItem>(originalSource);
+            var selectedRule = comboBoxItem.DataContext as IRule;
+            if (selectedRule.IsUnique && _rules.Any(rule => rule.RuleName == selectedRule.Name))
             {
                 return;
             }
 
-            var newRule = new RuleView() { RuleName = i.Name, RuleTypes = i, IsCheck = true, ToolTip = i.ToolTip };
+            selectedRule = selectedRule.Clone() as IRule;
+            var newRule = new RuleView() { RuleName = selectedRule.Name, RuleTypes = selectedRule, IsCheck = true, ToolTip = selectedRule.ToolTip };
             _rules.Add(newRule);
             CheckIfBatchable();
             UpdateResult();
@@ -181,7 +216,7 @@ namespace MultipleFilesRename
 
                     var title = new TextBlock()
                     {
-                        Text = Regex.Replace(Parameters[i], "(\\B[A-Z])", " $1") + ": ",
+                        Text = Regex.Replace(Parameters[i], "(\\B[A-Z])", " $1"),
                         Width = longestParamLength
                     };
                     var valueTextBox = new TextBox() { Width = 100 };
@@ -268,7 +303,7 @@ namespace MultipleFilesRename
         private void RemoveAllRules_Click(object sender, RoutedEventArgs e)
         {
             if (_rules.Count == 0) return;
-            MessageBoxResult messageBoxResult = MessageBox.Show("Are you sure ?", "Delete All Rules Confirmation", MessageBoxButton.YesNo);
+            MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Are you sure ?", "Delete All Rules Confirmation", MessageBoxButton.YesNo);
             if (messageBoxResult == MessageBoxResult.Yes)
             {
                 _rules.Clear();
@@ -320,6 +355,11 @@ namespace MultipleFilesRename
                     if (_files.Count == 0 || !CheckValidFiles(true)) return;
 
                     var tempDirectory = Directory.GetCurrentDirectory() + "\\" + "Temp";
+                    if (Directory.Exists(tempDirectory))
+                    {
+                        Directory.Delete(tempDirectory, true);
+                    }
+
                     Directory.CreateDirectory(tempDirectory);
                     int count = 0;
 
@@ -452,6 +492,56 @@ namespace MultipleFilesRename
                         longestFileNameLength = i.NewName.Length;
             }
             return longestFileNameLength;
+        }
+
+        private void dgFiles_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete)
+            {
+                var selectedItems = dgFiles.SelectedItems.Cast<FileInfor>().ToList();
+                if (selectedItems.Count == 0) return;
+                foreach (var selectedItem in selectedItems)
+                {
+                    _files.Remove(selectedItem);
+                }
+                UpdateResult();
+            }
+            else if (e.Key == Key.Enter)
+            {
+                var selectedItems = dgFiles.SelectedItems.Cast<FileInfor>().ToList();
+                if (selectedItems.Count == 0) return;
+                foreach (var selectedItem in selectedItems)
+                {
+                    string path = selectedItem.FilePath;
+                    Process.Start("explorer.exe", @path);
+                    e.Handled = true;
+                }
+            }
+        }
+
+        private void dgFolders_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete)
+            {
+                var selectedItems = dgFolders.SelectedItems.Cast<FileInfor>().ToList();
+                if (selectedItems.Count == 0) return;
+                foreach (var selectedItem in selectedItems)
+                {
+                    _folders.Remove(selectedItem);
+                }
+                UpdateResult();
+            }
+            else if (e.Key == Key.Enter)
+            {
+                var selectedItems = dgFolders.SelectedItems.Cast<FileInfor>().ToList();
+                if (selectedItems.Count == 0) return;
+                foreach (var selectedItem in selectedItems)
+                {
+                    string path = selectedItem.FilePath;
+                    Process.Start("explorer.exe", @path);
+                    e.Handled = true;
+                }
+            }
         }
     }
 

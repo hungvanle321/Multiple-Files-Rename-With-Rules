@@ -5,10 +5,11 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.IO;
 using System.Windows.Markup;
+using System.Text.RegularExpressions;
 
 namespace MultipleFilesRename
 {
-    internal class FileSizeConverter : IValueConverter
+    public class FileSizeConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

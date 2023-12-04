@@ -11,6 +11,7 @@ using DragEventArgs = System.Windows.DragEventArgs;
 using DataFormats = System.Windows.DataFormats;
 using System.Windows.Controls;
 using System.Collections.Generic;
+using Xceed.Wpf.Toolkit.Primitives;
 
 namespace MultipleFilesRename
 {
@@ -38,7 +39,7 @@ namespace MultipleFilesRename
 
         public int RowsPerPage { get; set; } = 16;
         public int TotalPages { get; set; } = 0;
-        public int CurrentPage { get; set; } = 0;
+        public int CurrentPage { get; set; } = 1;
 
         public int TotalItems { get; set; } = 0;
         public int DisplayingItems { get; set; } = 0;
@@ -56,7 +57,7 @@ namespace MultipleFilesRename
             dgFiles.ItemsSource = _subfiles;
 
             if (_subfiles.Count == 0)
-                if (CurrentPage > 0)
+                if (CurrentPage > 1)
                 {
                     CurrentPage--;
                     UpdatePaging();
@@ -68,54 +69,49 @@ namespace MultipleFilesRename
                 PageNumberStackPanel.Visibility = Visibility.Collapsed;
         }
 
-        private void AddingFilesToDatagrid()
+        private void fileComboBoxItems_AddFiles_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            var i = fileComboBox.SelectedIndex;
-            if (i == -1) return;
             var screen = new CommonOpenFileDialog
             {
-                Multiselect = true
+                Multiselect = true,
+                Title = "Add files"
             };
 
-            if (i == 0)
+            if (screen.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                screen.Title = "Add files";
-                if (screen.ShowDialog() == CommonFileDialogResult.Ok)
+                foreach (string fileName in screen.FileNames)
                 {
-                    foreach (string fileName in screen.FileNames)
-                    {
-                        if (_files.Any(info => info.FilePath == fileName)) continue;
-                        var info = new FileInfo(fileName);
-                        _files.Add(new FileInfor() { OldName = info.Name, NewName = info.Name, FilePath = fileName, FileSize = info.Length, DateModified = info.LastWriteTime });
-                    }
-                }
-            }
-            else
-            {
-                screen.Title = "Add directories";
-                screen.IsFolderPicker = true;
-                if (screen.ShowDialog() == CommonFileDialogResult.Ok)
-                {
-                    foreach (string fileName in screen.FileNames)
-                    {
-                        var dirInfo = new DirectoryInfo(fileName);
-                        FileInfo[] files = dirInfo.GetFiles();
-
-                        foreach (FileInfo file in files)
-                        {
-                            if (_files.Any(info => info.FilePath == file.FullName)) continue;
-                            _files.Add(new FileInfor() { OldName = file.Name, NewName = file.Name, FilePath = file.FullName, FileSize = file.Length, DateModified = file.LastWriteTime });
-                        }
-                    }
+                    if (_files.Any(info => info.FilePath == fileName)) continue;
+                    var info = new FileInfo(fileName);
+                    _files.Add(new FileInfor() { OldName = info.Name, NewName = info.Name, FilePath = fileName, FileSize = info.Length, DateModified = info.LastWriteTime });
                 }
             }
             UpdateResult();
         }
-
-        private void fileComboBox_DropDownClosed(object sender, EventArgs e)
+        private void fileComboBoxItems_AddFolders_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            AddingFilesToDatagrid();
-            
+            var screen = new CommonOpenFileDialog
+            {
+                Multiselect = true,
+                Title = "Add directories",
+                IsFolderPicker = true
+            };
+
+            if (screen.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                foreach (string fileName in screen.FileNames)
+                {
+                    var dirInfo = new DirectoryInfo(fileName);
+                    FileInfo[] files = dirInfo.GetFiles();
+
+                    foreach (FileInfo file in files)
+                    {
+                        if (_files.Any(info => info.FilePath == file.FullName)) continue;
+                        _files.Add(new FileInfor() { OldName = file.Name, NewName = file.Name, FilePath = file.FullName, FileSize = file.Length, DateModified = file.LastWriteTime });
+                    }
+                }
+            }
+            UpdateResult();
         }
         private void OpenThisFile_Click(object sender, RoutedEventArgs e)
         {
@@ -136,7 +132,7 @@ namespace MultipleFilesRename
         {
             int i = dgFiles.SelectedIndex + (CurrentPage - 1) * RowsPerPage;
             _files.RemoveAt(i);
-            UpdatePaging();
+            UpdateResult();
         }
 
         //Kéo thả từ File Explorer vào phần mềm
@@ -216,7 +212,7 @@ namespace MultipleFilesRename
         //Folder Tab
         public int RowsPerFolderPage { get; set; } = 16;
         public int TotalFolderPages { get; set; } = 0;
-        public int CurrentFolderPage { get; set; } = 0;
+        public int CurrentFolderPage { get; set; } = 1;
 
         public int TotalFolderItems { get; set; } = 0;
         public int DisplayingFolderItems { get; set; } = 0;
@@ -457,6 +453,58 @@ namespace MultipleFilesRename
             UpdateResult();
             CheckIfBatchable();
             e.Handled = true;
+        }
+
+        private void checkColumnsComboBox_ItemSelectionChanged(object sender, ItemSelectionChangedEventArgs e)
+        {
+            foreach (var item in checkColumnsComboBox.Items)
+            {
+                var selectorItem = checkColumnsComboBox.ItemContainerGenerator.ContainerFromItem(item) as SelectorItem;
+
+                var dgFilesColumn = dgFiles.Columns.First(h => h.Header.ToString() == item.ToString());
+                if (!(bool)selectorItem.IsSelected)
+                {
+                    dgFilesColumn.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    dgFilesColumn.Visibility = Visibility.Visible;
+                }
+            }
+        }
+
+        private void checkColumnsComboBox_Loaded(object sender, RoutedEventArgs e)
+        {
+            checkColumnsComboBox.ItemSelectionChanged -= checkColumnsComboBox_ItemSelectionChanged;
+            checkColumnsComboBox.ItemsSource = dgFiles.Columns.Select(c => c.Header).Skip(2);
+            checkColumnsComboBox.SelectAll();
+            checkColumnsComboBox.ItemSelectionChanged += checkColumnsComboBox_ItemSelectionChanged;
+        }
+
+        private void checkColumnsComboBoxFolders_ItemSelectionChanged(object sender, ItemSelectionChangedEventArgs e)
+        {
+            foreach (var item in checkColumnsComboBoxFolders.Items)
+            {
+                var selectorItem = checkColumnsComboBoxFolders.ItemContainerGenerator.ContainerFromItem(item) as SelectorItem;
+
+                var dgFoldersColumn = dgFolders.Columns.First(h => h.Header.ToString() == item.ToString());
+                if (!(bool)selectorItem.IsSelected)
+                {
+                    dgFoldersColumn.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    dgFoldersColumn.Visibility = Visibility.Visible;
+                }
+            }
+        }
+
+        private void checkColumnsComboBoxFolders_Loaded(object sender, RoutedEventArgs e)
+        {
+            checkColumnsComboBoxFolders.ItemSelectionChanged -= checkColumnsComboBoxFolders_ItemSelectionChanged;
+            checkColumnsComboBoxFolders.ItemsSource = dgFolders.Columns.Select(c => c.Header).Skip(2);
+            checkColumnsComboBoxFolders.SelectAll();
+            checkColumnsComboBoxFolders.ItemSelectionChanged += checkColumnsComboBoxFolders_ItemSelectionChanged;
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Lowercase_NoSpace_Rule
     public class Lowercase_NoSpace_Rule : IRule
     {
         public string Name => "Lowercase_NoSpaces";
-
+        public string DisplayName => "Lowercase & No Spaces";
         public string ToolTip => "Convert all characters to lowercase, remove all spaces";
 
         public bool IsUnique => true;

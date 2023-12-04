@@ -6,7 +6,7 @@ namespace NoOriginalNameRule
     public class NoOriginalNameRule : IRule
     {
         public string Name => "NoOriginalName";
-
+        public string DisplayName => "No Original Name";
         public string ToolTip => "Remove the original name";
 
         public bool IsUnique => true;

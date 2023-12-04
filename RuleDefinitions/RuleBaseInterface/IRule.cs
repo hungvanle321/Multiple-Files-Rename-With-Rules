@@ -11,6 +11,8 @@
 
         string Name { get; }
 
+        string DisplayName { get; }
+
         //Để khi load preset sẽ biết rule đó có được check hay không
         bool IsCheck { get; set; }
 

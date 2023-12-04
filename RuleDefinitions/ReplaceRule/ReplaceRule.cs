@@ -10,6 +10,7 @@ namespace ReplaceRule
         public string Replace { get; set; }
 
         public string Name => "Replace";
+        public string DisplayName => "Replace characters";
 
         public string ToolTip => "Replace certain characters into one character";
 

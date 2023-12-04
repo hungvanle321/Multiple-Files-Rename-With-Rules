@@ -29,6 +29,8 @@ namespace AddCounterRule
 
         public string Name => "AddCounter";
 
+        public string DisplayName => "Add Counter";
+
         public string ToolTip => "Add counter to the end of the file name";
 
         public bool IsUnique => false;

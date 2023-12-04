@@ -6,7 +6,7 @@ namespace PascalCaseRule
     public class PascalCaseRule : IRule
     {
         public string Name => "PascalCase";
-
+        public string DisplayName => "Change To Pascal Case";
         public bool IsCheck { get; set; }
 
         public string ToolTip => "Convert filename to PascalCase";

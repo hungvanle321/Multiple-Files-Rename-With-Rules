@@ -10,6 +10,7 @@ namespace AddPrefixRule
         public string Prefix { get; set; }
 
         public string Name => "AddPrefix";
+        public string DisplayName => "Add Prefix";
 
         public string ToolTip => "Adding a prefix to all the file names";
 

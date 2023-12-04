@@ -20,3 +20,5 @@ Besides that, it has some features:
 3. Checking exceptions when editing rules, when click batching to make sure that the files and folders all have valid name.
 4. See the preview of the results.
 5. Drag and drop between rules to change position.
+
+![Screenshot 2023-12-05 014622](https://github.com/hungvanle321/Multiple-Files-Rename-With-Rules/assets/40668702/4b6cb829-876c-4241-adb8-7016e2e21851)
